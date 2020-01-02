@@ -52,9 +52,15 @@ from employees;
 
 --부서별 최소급여 출력 
 select department_id, min(salary)
-from employees 
-where salary > ( --50번 부서의 salary보다 큰 값을 가지는 직원들중에서 비교
-            select min(salary)
+from employees
+having min(salary) > ( --50번 부서의 salary보다 큰 값을 가지는 직원들중에서 비교
+            s0.elect min(salary)
             from employees
             where department_id = 50)
-        group by department_id;
+group by department_id;
+
+--직책별 평균이 가장 작은 직책은 무엇인가?
+
+select job_id, avg(salary) 
+from employees
+group by job_id;
