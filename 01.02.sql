@@ -63,4 +63,70 @@ group by department_id;
 
 select job_id, avg(salary) 
 from employees
-group by job_id;
+group by job_id
+having avg(salary) =(   select min(avg(salary)) 
+                        from employees
+                        group by job_id);
+                        
+--job id = 'IT_Prog;와 같ㅌ은 사람들의 급여와 작은 직원들
+
+select first_name, salary, hire_date,job_id
+from employees
+where salary =ANY
+(
+                select salary
+                from employees
+                where job_id = 'IT_PROG');
+
+-- 최소보다 크다
+
+select first_name, salary, hire_date,job_id
+from employees
+where salary > ANY
+(
+                select salary
+                from employees
+                where job_id = 'IT_PROG');
+                
+                
+select first_name, salary, hire_date,job_id
+from employees
+where salary > 
+(
+                select min(salary)
+                from employees
+                where job_id = 'IT_PROG');
+
+--직원이 없는 부서코드 정보를 조회
+--상관  sub qeuryt
+select *
+from departments
+where not exists
+(select * from employees 
+where employees.department_id = departments.department_id);
+
+select * 
+from departments 
+where department_id not in 
+                    (
+select distinct department_id
+from employees
+where department_id is not null);
+
+select distinct department_id
+
+where department_id not in (
+    select distinct department_id 
+    from employees 
+    where department_id is not null);
+
+--exists 
+--급여가 15000이상인 직원이 있는가?
+
+select *
+from employees
+where exists(
+                select 1
+                from employees
+                where salary >= 15000
+                );
