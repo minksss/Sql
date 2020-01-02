@@ -431,8 +431,113 @@ where rk between 6 and 10;
 
 
 
+--1. BLAKE와 동일한 부서에 속한 모든 사원의 이름및 입사일을 표시하는 질의를 작성하시오.
+--결과에서 BLAKE는 제외시킵니다.j
 
+select * 
+from emp
+where deptno = (
+            select deptno
+            from emp
+            where ename = 'BLAKE')
+and ename <> 'BLAKE';
 
+--2. 부서의 위치가 DALLAS인 모든 사원의 이름, 부서번호 , 직무를 표시하시오 
 
+select * 
+from emp 
+where deptno = ( select deptno from dept
+where loc = 'DALLAS')
+;
 
+--3. KING에게 보고하는 모든 사원의 이름과 급여를 표시하는 질의를 작성하시오 
+select ename, sal
+from emp 
+where mgr = (
+                select empno
+                from emp 
+                where ename = 'KING');
+
+select * 
+from emp
+where ename = 'KING'
+;
+-- LAB(07일차)
+-- subquery를 사용하여 Query 해결
+select sal 
+from emp where ename = 'JONES';
+
+select ename, sal, deptno
+from emp 
+where sal > (select sal 
+from emp where ename = 'JONES');
+
+--테이블에서 평균 급여보다 더 많은 급여를 받는 사원들 검색
+select ename, sal, deptno
+from emp
+where sal > (select avg(sal) from emp);
+
+-- 테이블에서 부서별 최소 급여와 동일한 급여를 갖는 사원들 검색
+select ename, sal, deptno
+from emp 
+where sal in (select min(sal) from emp group by deptno);
+
+--Multiple ros subquery 사용
+select ename, sal, deptno
+from emp 
+where sal in(select min(sal) from emp group by deptno);
+
+select ename, sal, deptno 
+from emp 
+where sal IN (950,800,1300);
+
+select ename, sal, deptno 
+from emp
+where sal = 950 or sal = 800 or sal = 1300;
+
+select ename, sal, deptno 
+from emp 
+where sal > any ( select avg(sal) from emp 
+                    group by deptno);
+                    
+--각각의 모든 부서별 평균 급여보다 더 많은 급여를 받는 사원들 검색
+select ename, sal, deptno 
+from emp
+where sal > ALL (
+                select avg(sal) 
+                from emp 
+                group by deptno);
+--subquery와 not in 연산 사용 시 주의사항
+select ename, mgr, sal ,deptno 
+from emp
+where empno IN (select mgr from emp);
+
+select ename, mgr, sal, deptno
+from emp
+where empno NOT IN (select mgr from emp);
+
+select ename, sal, deptno
+from emp
+where deptno in (10,20, NULL);
+
+select empno, ename, sal, deptno 
+from emp aa
+where sal > ( select avg(sal)
+                from emp 
+                group by aa.deptno);
+
+select empno, ename, deptno, sal,
+(select sum(sal) from emp group by aa.deptno) total
+from emp aa ;
+
+SELECT a.empno, a.ename, a.deptno, a.sal , SUM(b.sal) AS TOTAL
+     FROM ( SELECT empno, ename, sal, deptno
+            FROM emp
+            WHERE deptno = 10 ) a ,
+          ( SELECT empno, ename, sal, deptno
+            FROM emp
+            WHERE deptno = 10 ) b
+WHERE a.empno >= b.empno
+GROUP BY a.empno, a.ename, a.deptno, a.sal
+ORDER BY a.empno ;
 
