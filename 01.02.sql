@@ -24,7 +24,7 @@ where department_id = (
                     from employees
                     where first_name = 'David');
                     
-select * 
+select * 0p
 from employees 
 where job_id = ( select job_id
                  from employees
@@ -541,3 +541,24 @@ WHERE a.empno >= b.empno
 GROUP BY a.empno, a.ename, a.deptno, a.sal
 ORDER BY a.empno ;
 
+--LAB 06 13)
+
+select last_name, salary, job_id,employees.department_id
+from employees, (
+                 select department_id, max(salary) maxsal
+                 from employees 
+                 group by department_id) dept_group
+where employees.department_id = dept_group.department_id
+and employees.salary = dept_group.maxsal
+order by department_id asc;
+       
+select to_char(hire_date, 'mm'),count(*)
+from employees 
+group by to_char(hire_date, 'mm')
+having to_char(hire_date, 'yyyy',1981);
+
+select prods.prod_id, prods.prod_name, NVL(s.ps,0)
+from prods left outer join( select prod_id, sum(quantity_sold) ps
+                            from sales
+                            group by prod_id) S
+                        on prods.prod_id = S.prod_id;
