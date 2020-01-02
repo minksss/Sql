@@ -128,5 +128,124 @@ from employees
 where exists(
                 select 1
                 from employees
-                where salary >= 15000
+                where salary >= 30000
                 );
+                
+--자신의 부서의 평균보다 적은 급여를 받는 직원을 조회
+
+select first_name, department_id, salary
+from employees e
+where salary < ( select avg(salary) 
+                 from employees 
+                 where e.department_id = 20);
+
+select avg(salary)
+from employees 
+where department_id = 20;
+
+select first_name, department_id, salary
+from employees e
+where salary < ( select avg(salary) 
+                 from employees 
+                 where department_id = e.department_id);
+
+
+select first_name, department_id, salary,  ( select round(avg(salary)) 
+                 from employees 
+                 where department_id = e.department_id)  부서평균
+from employees e
+where salary < ( select avg(salary) 
+                 from employees 
+                 where department_id = e.department_id);
+                 
+                 
+select first_name, department_id, salary
+from employees,(
+select department_id aa, round(avg(salary),2) 부서평균
+from employees 
+group by department_id) inlineview
+where employees.department_id = inlineview.aa
+;
+--매니저가 아닌 직원을 조회
+--매니저는 18명이다
+
+select distinct manager_id   
+from employees ;
+
+select *
+from employees
+where employee_id in ( select distinct manager_id 
+                            from employees
+                            where manager_id is not null);
+                            
+    
+select first_name, salary, hire_date
+from employees 
+where department_id 
+(
+ select department_id
+from departments
+where department_name = 'IT');
+
+
+select first_name, last_name, department_id
+from employees
+where department_id in (
+
+
+select  department_id
+from employees
+where first_name = 'Alexander');
+
+select first_name, department_id, salary 
+from employee
+where salary > (    
+                select avg(salary)
+                from employees
+                where department_id = 80);
+                
+
+select* from employees 
+where salary>(
+select min(salary)
+from employees 
+where department_id in (
+                        select department_id
+                        from departments 
+                        where location_id = (
+                                            select location_id
+                                            from locations 
+                                            where city = 'South San Francisco')
+)
+)
+
+and salary > ( select avg(salary) from employees where department_id = 50)
+;
+
+--5. 직원들의 이름, 입사일, 부서명을 조회하시오.
+--단, 부서가 없는 직원이 있다면 그 직원정보도 출력결과에 포함시킨다.
+--그리고 부서가 없는 직원에 대해서는 '<부서없음>' 이 출력되도록 한다.
+
+select first_name, hire_date, department_name
+from employees left outer join departments
+using(department_id);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
