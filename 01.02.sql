@@ -562,3 +562,145 @@ from prods left outer join( select prod_id, sum(quantity_sold) ps
                             from sales
                             group by prod_id) S
                         on prods.prod_id = S.prod_id;
+                        
+-- Lab 06AD 6번
+--1) subquery
+
+select ename, sal, (select sal 
+                    from emp
+                    where ename = 'JONES' ) "Jones의 salary"
+from emp 
+where sal > (
+select sal 
+from emp
+where ename = 'JONES'
+             );           
+--2) self-join
+
+select 직원.ename, 직원.sal, 존스.sal
+from emp 직원, emp 존스
+where 직원.sal > 존스.sal
+and 존스.ename = 'JONES';
+
+--7번) in, not in, exists, not exists
+--1) not in
+select * 
+from departments 
+where department_id not in ( select distinct department_id
+                             from employees );
+                             
+
+--2) not exists
+
+select *
+from departments aa
+where not exists ( select 1
+                    from employees 
+                    where department_id = aa.department_id);
+                             
+--8번
+select aa.* , (select 'YES'
+                from dual
+                where exists
+                (select 1
+                from emp
+                where deptno = aa.deptno
+                )
+                )
+                from dept aa;
+                
+select dept.* , ( select 1 from emp where emp.deptno = dept.deptno
+from dept;
+
+
+select * from orders;
+select * from order_items
+where order_id = 2458;
+
+select * from wishlist
+where cust_id =106 and product_id = 3039;
+
+where cust_id, product_id
+from orders join order_items using (order_id)
+where cust_id = 106 and product_id = 3090;
+
+select cust_id, product_id, sum(unit_price*quantity) 위시합
+from wishlist
+group by cust_id, product_id;
+
+
+select cust_id, product_id, sum(unit_price*quantity) 주문합
+from orders join order_items using(order_id)
+group by cust_id, product_id;
+
+
+select nvl(aa.cust_id, bb.cust_id) cust_id,
+nvl(aa.product_id, bb.product_id) product_id,
+aa.위시합, bb.주문합
+from (
+select cust_id, product_id, sum(unit_price*quantity) 위시합
+from wishlist
+group by cust_id, product_id_ aa full outer join
+
+select cust_id, product_id, sum(unit_price*quantity) 주문합
+from orders join order_items using(order_id)
+group by cust_id, product_id)bb
+on(aa.cust_id = bb.cust_id and aa.product_id = bb.product_id);
+
+
+select prod_id, prod_name, sum(quantity_sold) 판매합계
+from prods left outer join sales using (prod_id)
+group by prod_id, prod_name;
+
+                        
+select to_char(hiredate,'yyyy/mm') mon, count(*) 입사자수
+from emp
+where hiredate between '1981/01/01' and '1981/12/31';
+
+--12번)
+select 월, nvl(입사자수,0)
+from (
+select '1981/'||lpad(level, 2, 0) 월
+from dual 
+connect by level <=12) aa left outer join (
+select to_char(hiredate,'yyyy/mm') 월, count(*) 입사자수
+from emp
+where hiredate between '1981/01/01' and '1981/12/31'
+group by to_char(hiredate,'yyyy/mm')
+                                            ) bb
+using( 월)
+order by 1;
+                        
+--13번
+--inline view(가상의 테이블)
+select first_name, aa.department_id, salary 
+from employees 
+join (
+select department_id, max(salary) maxsal
+from employees
+group by department_id) aa  
+on (employees.department_id=aa.department_id
+and employees.salary = aa.maxsal)
+order by 3;
+
+select * 
+from emp, ( select deptno, sum(sal) from emp 
+            group by deptno) aa
+            where emp.deptno = aa.deptno;
+            
+
+
+
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
