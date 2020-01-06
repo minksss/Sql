@@ -317,3 +317,162 @@ rollback to bb;
 commit;
 rollback to aa;
 
+select salary,first_name from employees where employee_id = 100;
+update employees 
+set first_name = '½ºÆ¼ºì' where employee_id = 100;
+commit;
+
+update employees 
+set first_name = '½ºÆ¼ºì2',
+salary = 60000 
+where employee_id = 100;
+
+rollback;
+
+select * from employees
+where job_id = 'SA_REP'
+for update;
+
+rollback;
+
+create table copy_emp 
+as 
+select* from emp where 1 = 0;
+
+select * from copy_emp;
+
+ INSERT INTO copy_emp ( empno, ename, job, mgr, hiredate, sal, comm, deptno )
+VALUES ( 7369, 'SMITH', 'CLERK', 7902, TO_DATE('80/12/17','RR/MM/DD') , 800, NULL, 20 ) ;
+
+INSERT INTO copy_emp ( empno, ename, hiredate, deptno )
+VALUES ( 7499, 'ALLEN', SYSDATE, 30 ) ;
+
+INSERT INTO copy_emp
+SELECT * FROM emp
+WHERE deptno = 10 ;
+
+commit;
+
+UPDATE copy_emp
+SET sal = 5000
+WHERE empno = 7369 ;
+
+ UPDATE copy_emp
+SET hiredate = SYSDATE , comm = NULL
+WHERE empno = 7369 ;
+
+ UPDATE copy_emp
+SET deptno = 50 ;
+
+ SELECT * FROM copy_emp ;
+ 
+ rollback;
+ 
+ update copy_emp
+ set hiredate = (select hiredate from emp
+                    where empno = 7499);
+                    
+                    UPDATE copy_emp
+SET (job, mgr, sal, comm) = ( SELECT job, mgr, sal, comm
+FROM emp
+WHERE empno = 7499 )
+WHERE empno = 7499 ;
+select * from copy_emp;
+p
+WHERE empno = 7499 ;
+
+commit;
+
+select * from copy_emp;
+
+delete copy_emp;
+
+DELETE copy_emp
+WHERE deptno = ( SELECT deptno FROM emp
+WHERE empno = 7839 ) ;
+
+
+rollback;
+
+SELECT * FROM salgrade ;
+
+truncate table salgrade;
+
+rollback;
+
+
+UPDATE copy_emp
+SET sal = 6000
+WHERE empno = 7369;
+
+SAVEPOINT update_done ;
+
+delete copy_emp
+where empno = 7499;
+
+rollback to update_done;
+
+select * from copy_emp;
+rollback;
+
+UPDATE copy_emp
+SET sal = 7000
+WHERE empno = 7369 ;
+
+ALTER TABLE copy_emp
+MODIFY (sal NUMBER(8,2)) ;
+
+SELECT * FROM copy_emp ;
+
+
+SELECT empno, sal
+FROM emp AS OF TIMESTAMP TO_DATE('2013/05/14 16:15:58','YYYY/MM/DD HH24:MI:SS')
+WHERE empno = 7788 ;
+
+SELECT empno, ename, sal
+FROM copy_emp
+WHERE deptno = 10 ;
+
+UPDATE copy_emp
+SET sal = 9999
+WHERE empno = 7839 ;
+
+SELECT empno, ename, sal
+FROM copy_emp
+WHERE deptno = 10 ;
+
+SELECT empno, ename, sal
+FROM copy_emp
+WHERE deptno = 10 ;
+
+SELECT TO_CHAR(SYSDATE,'YYYY/MM/DD HH24:MI:SS') FROM dual ;
+
+update emp
+set sal = sal * 1.2
+where empno = 7788;
+
+commit;
+
+select empno, sal 
+from emp
+where empno = 7788;
+
+update emp
+set sal = 20000
+where empno = 7788;
+
+select * from emp
+where empno = 7788;
+
+select empno, sal 
+from emp as of timestamp to_date('2020/01/06 16:34:24','YYYY/MM/DD HH24:MI:SS')
+where empno = 7788;
+
+SELECT empno, sal
+FROM emp AS OF TIMESTAMP ( SYSDATE - INTERVAL '10' MINUTE )
+WHERE empno = 7788 ;
+
+ SELECT empno, sal, versions_starttime, versions_endtime, versions_startscn, versions_endscn
+FROM emp VERSIONS BETWEEN TIMESTAMP MINVALUE AND MAXVALUE
+WHERE empno = 7788 ;
+
