@@ -177,3 +177,156 @@ ON EMP9(PHONE_NUMBER);
 -- 함수 기반 index
 create index EMP9_phone2_idx
 on emp9(substr(phone_number,1,7));
+
+
+select * from user_tables;
+
+select sysdate from dual;
+
+select * from all_tables;
+
+select * from all_objects 
+where object_type = 'SYNONYM';
+
+--lab(11)
+
+select empno, ename, sal, deptno
+from emp
+where deptno = 10;
+
+create view empv10 as
+select empno, ename, sal, deptno
+from emp
+where deptno = 10;
+
+desc empv10;
+
+select * from empv10;
+
+update empv10
+set sal = sal * 1.2
+where empno = 7839;
+
+update empv10
+set deptno = 20
+where empno = 7934;
+
+select empno, ename, sal, deptno 
+from emp
+where empno IN (7839,7934);
+
+
+select view_name, text 
+from user_views;
+--where view_name = 'empv10';
+
+select * 
+from( select empno, ename, sal, deptno 
+      from emp
+      where deptno = 10);
+      
+create view empv_sum
+as 
+select deptno, sum(sal) sum
+from emp 
+group by deptno;
+
+select * from empv_sum;
+
+delete empv_sum
+where deptno = 10;
+
+drop view empv_sum;
+
+create or replace view empv10
+as select empno, ename, sal, comm, deptno
+from emp 
+where deptno = 10;
+
+CREATE OR REPLACE VIEW empv10
+AS SELECT empno, ename, sal, comm, deptno
+FROM emp
+WHERE deptno = 10 WITH CHECK OPTION ;
+
+UPDATE empv10
+SET sal = 6000
+WHERE empno = 7839 ;
+
+
+select * from empv10;
+
+UPDATE empv10
+SET deptno = 20	
+WHERE empno = 7839 ;
+
+rollback;
+
+CREATE OR REPLACE VIEW empv10
+AS SELECT empno, ename, sal, comm, deptno
+FROM emp
+WHERE deptno = 10 WITH READ ONLY ;
+
+UPDATE empv10
+SET sal = 6000
+WHERE empno = 7839 ;
+
+
+create sequence empno_seq
+start with 8000
+increment by 1;
+
+SELECT sequence_name, increment_by, cache_size, last_number
+FROM user_sequences
+WHERE sequence_name = 'EMPNO_SEQ' ;
+
+INSERT INTO emp (empno, ename, deptno)
+VALUES (empno_seq.nextval, 'RYU',30) ;
+
+select * from emp;
+
+SELECT empno_seq.nextval FROM dual ;
+SELECT empno_seq.currval FROM dual ;
+
+SELECT sequence_name, increment_by, cache_size, last_number
+FROM user_sequences
+WHERE sequence_name = 'EMPNO_SEQ' ;
+
+rollback;
+
+SELECT empno_seq.nextval FROM dual;
+
+CREATE SEQUENCE seq1
+START WITH 100
+INCREMENT BY 1
+MAXVALUE 103
+MINVALUE 50
+CYCLE
+NOCACHE ;
+
+SELECT seq1.nextval FROM dual ;
+
+ALTER SEQUENCE seq1 
+MAXVALUE 200
+cache 20;
+
+DROP SEQUENCE empno_seq ;
+DROP SEQUENCE seq1 ;
+
+SELECT index_name, index_type, table_name, uniqueness
+FROM user_indexes
+WHERE table_name = 'EMP' ;
+
+set autotrace on explain;
+
+select empno, ename, deptno 
+from emp 
+where empno = 7788;
+
+SELECT empno, ename, deptno
+FROM emp
+WHERE ename = 'SCOTT' ;
+
+select empno, ename,deptno 
+from ora1.emp;
+
+
