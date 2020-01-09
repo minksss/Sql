@@ -142,9 +142,9 @@ print b_result;
     where EMPLOYEE_id = 101;
     
     
-SELECT sql_text FROM v$sql WHERE SQL_TEXT LIKE '%EMPLOYEE_ID = %';
+SELECT sql_text FROM v$sql WHERE lower(SQL_TEXT) LIKE '%first_name%';
 
- --------******중요***-------- 
+ --------******중요***-------- 커맨드창에서는 입력을 못받나?
 declare 
     v_employee_id employees.employee_id%type;
     v_hire_date employees.hire_date%type;
