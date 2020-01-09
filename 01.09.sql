@@ -106,6 +106,9 @@ set serveroutput on;
 declare 
  v_salary number(1,2);
  v_salary2 employees.salary%type;
+ v_hiredate date;
+ v_hiredate2 employees.hire_date%type;
+ v_hiredate3 
  
 begin
     select salary
@@ -117,12 +120,50 @@ end;
 
 /
 
-  
-  
+desc emploees;
+variable b_result number
+execute :b_result := 1000
+print b_result;
 
+variable b_empid number
+execute :b_empid ;
 
+begin 
+    select salary 
+    into :b_result
+    from employees
+    where EMPLOYEE_id = 106;
+end;
+/
+print b_result;
 
+ select salary 
+    from employees
+    where EMPLOYEE_id = 101;
+    
+    
+SELECT sql_text FROM v$sql WHERE SQL_TEXT LIKE '%EMPLOYEE_ID = %';
 
+ --------******Áß¿ä***-------- 
+declare 
+    v_employee_id employees.employee_id%type;
+    v_hire_date employees.hire_date%type;
+    v_salary employees.salary%type;
+    v_last_name employees.last_name%type;
+    
+begin 
+    select employee_id, hire_date, salary, last_name
+    into v_employee_id, v_hire_date, v_salary, v_last_name
+    from employees
+    where first_name ='&fname' 
+    and department_id = '&dept';
+    
+    dbms_output.put_line(v_employee_id);
+    dbms_output.put_line(v_hire_date);
+    dbms_output.put_line(v_salary);
+    dbms_output.put_line(v_last_name);
 
+end;
+/
 
 
