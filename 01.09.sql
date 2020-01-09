@@ -144,7 +144,15 @@ print b_result;
     
 SELECT sql_text FROM v$sql WHERE lower(SQL_TEXT) LIKE '%first_name%';
 
+
  --------******중요***-------- 커맨드창에서는 입력을 못받나?
+
+variable b_fname varchar2(20)
+variable b_dept number
+execute :b_fname :='&fname'
+execute :b_dept :='&dept'
+
+
 declare 
     v_employee_id employees.employee_id%type;
     v_hire_date employees.hire_date%type;
@@ -155,8 +163,8 @@ begin
     select employee_id, hire_date, salary, last_name
     into v_employee_id, v_hire_date, v_salary, v_last_name
     from employees
-    where first_name ='&fname' 
-    and department_id = '&dept';
+    where first_name =:b_fname 
+    and department_id =:b_dept;
     
     dbms_output.put_line(v_employee_id);
     dbms_output.put_line(v_hire_date);
