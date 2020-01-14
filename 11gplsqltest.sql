@@ -263,13 +263,286 @@ BEGIN
 END;
 /
 
+SELECT * FROM EMP01
+WHERE EMPLOYEE_ID = 1234;
+
 DESC EMP01;
+
+BEGIN 
+    UPDATE EMP01
+    SET SALARY = 4000
+    WHERE EMPLOYEE_ID = 1234;
+ END;
+ /
  
+ BEGIN
+    DELETE EMP01
+    WHERE EMPLOYEE_ID = 1234;
+ END;
+ /
  
+ SELECT * FROM EMP01;
+ BEGIN
+    UPDATE EMP01
+    SET SALARY = 4000
+    WHERE EMPLOYEE_ID = 177;
+    
+    UPDATE EMP01
+    SET SALARY = 3500
+    WHERE EMPLOYEE_ID = 176;
+END;
+/
  
+SELECT * FROM EMP01
+WHERE EMPLOYEE_ID IN (176,177);
+
+ROLLBACK;
+
+SET SERVEROUTPUT ON;
+
+BEGIN 
+    UPDATE EMP01
+    SET SALARY = 4000
+    WHERE EMPLOYEE_ID = 176;
+    DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT); --SQL%ROWCOUNT는 가장 최근에 수행된
+                                        -- SQL문에 의해 영향을 받은 행의 갯수
+
+    DELETE EMP01
+    WHERE DEPARTMENT_ID = 10;
+    DBMS_OUTPUT.PUT_LINE(SQL%ROWCOUNT); 
+END;
+/
+
+    --SELECT 문
+    
+    INSERT INTO EMP01
+    (EMPLOYEE_ID, LAST_NAME, EMAIL, HIRE_DATE,JOB_ID)
+    VALUES(999,'CHANG','POBO','10/12/02','IT_PROG');
+    
+    SELECT * FROM EMP01;
+    DESC EMP01;
+    DECLARE 
+        V_ENAME VARCHAR2(10);
+        V_SAL EMP01.SALARY%TYPE;
+    BEGIN 
+        SELECT FIRST_NAME, SALARY 
+        INTO V_ENAME, V_SAL 
+        FROM EMP01
+        WHERE EMPLOYEE_ID = 999;
+        
+        DBMS_OUTPUT.PUT_LINE(V_ENAME || '+' || V_SAL);
+    END;
+
+ -- DDL, DCL문
  
+    BEGIN 
+        DROP TABLE EMP01;
+    END;
+    /
+    
+    
+--제어 구조 작성 
+--IF문
+
+    DECLARE
+        V_MYAGE NUMBER;
+    BEGIN
+        IF V_MYAGE < 11 THEN
+            DBMS_OUTPUT.PUT_LINE('CHILD');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('NO CHILD');
+        END IF;
+    END;
+    /
+    
+--CASE 표현식 
+    DECLARE 
+        V_GRADE VARCHAR2(10) := UPPER('&GRADE');
+        V_APP VARCHAR2(20);
+    BEGIN
+        V_APP := CASE V_GRADE WHEN 'A' THEN 'EX'
+                              WHEN 'B' THEN 'VG'
+                              WHEN 'C' THEN 'G'
+                    ELSE 'NO G'
+                    END;
+        DBMS_OUTPUT.PUT_LINE(V_GRADE || '~' || V_APP);
+
+    END;
+    /
  
+ --LOOP문
  
+ DECLARE 
+    V_COUNT NUMBER(2) := 1;
+    
+ BEGIN 
+    LOOP 
+        DBMS_OUTPUT.PUT_LINE(TO_CHAR(V_COUNT));
+        V_COUNT := V_COUNT + 2;
+        EXIT WHEN V_COUNT = 7;
+    END LOOP;
+    END;
+    /
+    
+--NESTED LOOPS
+    
+ DECLARE 
+    X NUMBER := 3;
+    Y NUMBER;
+ BEGIN 
+    <<OUTER_LOOP>>
+    LOOP 
+     Y := 1;
+     EXIT WHEN X > 4;
+     <<INNER_LOOP>>
+    LOOP
+    DBMS_OUTPUT.PUT_LINE( X || '*' || Y || '=' || X*Y );
+    Y := Y + 1;
+    EXIT WHEN Y>5;
+    END LOOP INNER_LOOP;
+    X := X+1;
+    END LOOP OUTER_LOOP;
+    END;
+    /
+    
+    --CONTINUE문
+    
+    DECLARE 
+    V_TOTAL SIMPLE_INTEGER := 0;
+    
+    BEGIN
+        FOR i IN 1..5 LOOP
+        V_TOTAL := V_TOTAL + i;
+        DBMS_OUTPUT.PUT_LINE(V_TOTAL);
+        
+        CONTINUE WHEN i > 3;
+        v_total := v_total +i;
+        DBMS_OUTPUT.PUT_LINE('out' || v_total);
+        END LOOP;
+    END;
+    /
+    
+    --조합 데이터 유형
+    --PL/SQL RECORD 
+    DESC EMP01;    
+    DECLARE 
+        TYPE EMP_REC_TYP IS RECORD
+        (ENAME VARCHAR2(10),
+         SAL EMP01.SALARY%TYPE,
+         JOB EMP01.JOB_ID%TYPE := 'NONE');
+        
+        EMP_REC EMP_REC_TYP;
+    
+    BEGIN
+        SELECT FIRST_NAME, SALARY, JOB_ID INTO EMP_REC
+        FROM EMP01
+        WHERE EMPLOYEE_ID = 177;
+    
+    END;
+    /
+    
+    DECLARE 
+        EMP_REC EMP01%ROWTYPE;
+    BEGIN
+        SELECT * INTO EMP_REC
+        FROM EMP01
+        WHERE EMPLOYEE_ID = 176;
+    END;
+    /
+    
+    --RECORD TYPE 사용
+    
+    CREATE TABLE COPY_EMP
+    AS
+    SELECT * FROM EMP01
+    WHERE DEPARTMENT_ID = 30;
+    
+    DROP TABLE COPY_EMP;
+    
+    SELECT * FROM COPY_EMP;
+
+    DECLARE 
+        EMP_REC EMP01%ROWTYPE;
+    BEGIN 
+        SELECT * INTO EMP_REC
+        FROM EMP01
+        WHERE EMPLOYEE_ID = 177;
+    
+        INSERT INTO COPY_EMP
+        VALUES EMP_REC;
+        
+        SELECT * INTO EMP_REC
+        FROM EMP01
+        WHERE EMPLOYEE_ID = 178;
+        
+         INSERT INTO COPY_EMP
+        VALUES EMP_REC;
+        
+        END;
+        /
+        
+        SELECT * FROM COPY_EMP;
+        
+        --PL/SQL COLLECTION (INDEX BY TABLE) 사용
+        
+        DECLARE 
+            TYPE TAB_TYP IS TABLE OF VARCHAR2(10)
+            INDEX BY PLS_INTEGER;
+            
+            TAB TAB_TYP;
+            
+        BEGIN
+            TAB(100) := 'AAA';
+            TAB(10) := 'BBB';
+            TAB(50) := 'CCC';
+            TAB(30) := 'DDD';
+            
+            FOR i IN 1..TAB.LAST LOOP
+                IF TAB.EXISTS(i) THEN 
+                    DBMS_OUTPUT.PUT_LINE(i || '-'||TAB(i));
+                END IF;
+            END LOOP;
+        END;
+        /
+        
+        DECLARE 
+            TYPE ENAME_TAB_TYP IS TABLE OF EMP01.FIRST_NAME%TYPE
+            INDEX BY PLS_INTEGER;
+        
+            ENAME_TAB ENAME_TAB_TYP;
+        BEGIN
+            SELECT FIRST_NAME BULK COLLECT INTO ENAME_TAB
+            FROM EMP01
+            WHERE DEPARTMENT_ID = 30;
+            
+            FOR i IN ENAME_TAB.FIRST .. ENAME_TAB.LAST 
+            LOOP 
+                IF ENAME_TAB.EXISTS(i) THEN 
+                    DBMS_OUTPUT.PUT_LINE(i || '-' || ename_tab(i));
+            END IF;
+            END LOOP;
+        END;
+        /
+        
+    -- PL/SQL COLLECTION(NESTED TABLE) 사용
+        DECLARE 
+            TYPE TAB_TYP IS TABLE OF VARCHAR2(10);
+            
+            TAB TAB_TYP := TAB_TYP('AAA','BBB','CCC');
+        
+        BEGIN
+            FOR i IN TAB.FIRST .. TAB.LAST 
+            LOOP
+                IF TAB.EXISTS(i) THEN
+                     DBMS_OUTPUT.PUT_LINE(i || '-' || TAB(i));
+                END IF;
+            END LOOP;
+        END;
+        /
+        
+    --P28부터 시작
+        
+
  
  
  
